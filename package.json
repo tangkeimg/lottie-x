@@ -18,11 +18,13 @@
   ],
   "keywords": [
     "lottie",
+    "lottie preview",
+    "lottie viewer",
+    "lottie animation",
+    "lottie json",
+    "json animation",
     "dotlottie",
-    "animation",
-    "preview",
-    "svg",
-    "json"
+    ".lottie"
   ],
   "activationEvents": [
     "onCustomEditor:lottie-x.preview",
