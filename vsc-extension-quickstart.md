@@ -11,7 +11,7 @@
 
 ## Setup
 
-* install the recommended extensions (amodio.tsl-problem-matcher, ms-vscode.extension-test-runner, and dbaeumer.vscode-eslint)
+* install the recommended extensions (ms-vscode.extension-test-runner and, if you keep the stock task matcher setup, connor4312.esbuild-problem-matchers)
 
 
 ## Get up and running straight away
