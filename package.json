@@ -3,12 +3,12 @@
   "displayName": "Lottie Toolkit",
   "description": "Preview .lottie and Lottie JSON animations directly in Visual Studio Code.",
   "icon": "icon.png",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "publisher": "tangkeimg",
   "license": "SEE LICENSE IN LICENSE.txt",
   "repository": {
     "type": "git",
-    "url": "https://github.com/tangkeimg/lottie-x.git"
+    "url": "https://github.com/tangkeimg/lottie-toolkit.git"
   },
   "engines": {
     "vscode": "^1.118.0"
@@ -28,16 +28,16 @@
     ".lottie"
   ],
   "activationEvents": [
-    "onCustomEditor:lottie-x.preview",
-    "onCustomEditor:lottie-x.jsonPreview",
-    "onCommand:lottie-x.openPreview",
+    "onCustomEditor:lottie-toolkit.preview",
+    "onCustomEditor:lottie-toolkit.jsonPreview",
+    "onCommand:lottie-toolkit.openPreview",
     "onLanguage:json"
   ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "lottie-x.openPreview",
+        "command": "lottie-toolkit.openPreview",
         "title": "Open Lottie Preview",
         "icon": "$(open-preview)"
       }
@@ -45,7 +45,7 @@
     "menus": {
       "editor/title": [
         {
-          "command": "lottie-x.openPreview",
+          "command": "lottie-toolkit.openPreview",
           "when": "resourceExtname == .json",
           "group": "navigation"
         }
@@ -53,7 +53,7 @@
     },
     "customEditors": [
       {
-        "viewType": "lottie-x.preview",
+        "viewType": "lottie-toolkit.preview",
         "displayName": "Lottie Preview",
         "selector": [
           {
@@ -63,7 +63,7 @@
         "priority": "default"
       },
       {
-        "viewType": "lottie-x.jsonPreview",
+        "viewType": "lottie-toolkit.jsonPreview",
         "displayName": "Lottie Preview",
         "selector": [
           {

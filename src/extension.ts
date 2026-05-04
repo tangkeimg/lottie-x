@@ -6,7 +6,7 @@ let lastAutoPreviewUri: string | undefined;
 export function activate(context: vscode.ExtensionContext): void {
 	context.subscriptions.push(
 		LottiePreviewProvider.register(context),
-		vscode.commands.registerCommand('lottie-x.openPreview', (uri?: vscode.Uri) => {
+		vscode.commands.registerCommand('lottie-toolkit.openPreview', (uri?: vscode.Uri) => {
 			const targetUri = uri ?? vscode.window.activeTextEditor?.document.uri;
 
 			if (!targetUri) {

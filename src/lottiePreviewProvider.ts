@@ -1,8 +1,8 @@
 import * as path from 'node:path';
 import * as vscode from 'vscode';
 
-const VIEW_TYPE = 'lottie-x.preview';
-export const JSON_VIEW_TYPE = 'lottie-x.jsonPreview';
+const VIEW_TYPE = 'lottie-toolkit.preview';
+export const JSON_VIEW_TYPE = 'lottie-toolkit.jsonPreview';
 
 type PreviewMessage = {
 	type: 'load';

@@ -2,7 +2,7 @@
 
 ## 1.0.0
 
-Initial public release of lottie-x.
+Initial public release of lottie-toolkit.
 
 ### Added
 

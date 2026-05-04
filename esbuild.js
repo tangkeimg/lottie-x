@@ -53,7 +53,7 @@ async function main() {
 		entryPoints: ['src/preview/index.ts'],
 		bundle: true,
 		format: 'iife',
-		globalName: 'LottieXPreview',
+		globalName: 'LottieToolkitPreview',
 		minify: production,
 		sourcemap: !production,
 		sourcesContent: false,
