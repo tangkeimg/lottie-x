@@ -2,6 +2,7 @@
   "name": "lottie-x",
   "displayName": "lottie-x",
   "description": "Preview .lottie and Lottie JSON animations directly in Visual Studio Code.",
+  "icon": "icon.png",
   "version": "1.0.0",
   "license": "SEE LICENSE IN LICENSE.txt",
   "engines": {
