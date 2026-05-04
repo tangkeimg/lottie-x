@@ -1,13 +1,23 @@
 {
   "name": "lottie-x",
   "displayName": "lottie-x",
-  "description": "",
-  "version": "0.0.1",
+  "description": "Preview .lottie and Lottie JSON animations directly in Visual Studio Code.",
+  "version": "1.0.0",
+  "license": "SEE LICENSE IN LICENSE.txt",
   "engines": {
     "vscode": "^1.118.0"
   },
   "categories": [
+    "Visualization",
     "Other"
+  ],
+  "keywords": [
+    "lottie",
+    "dotlottie",
+    "animation",
+    "preview",
+    "svg",
+    "json"
   ],
   "activationEvents": [
     "onCustomEditor:lottie-x.preview",
