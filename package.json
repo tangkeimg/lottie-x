@@ -1,9 +1,10 @@
 {
-  "name": "lottie-x",
-  "displayName": "lottie-x",
+ "name": "lottie-toolkit",
+  "displayName": "Lottie Toolkit",
   "description": "Preview .lottie and Lottie JSON animations directly in Visual Studio Code.",
   "icon": "icon.png",
   "version": "1.0.0",
+  "publisher": "tangkeimg",
   "license": "SEE LICENSE IN LICENSE.txt",
   "repository": {
     "type": "git",
