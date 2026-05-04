@@ -10,10 +10,28 @@
     "Other"
   ],
   "activationEvents": [
-    "onCustomEditor:lottie-x.preview"
+    "onCustomEditor:lottie-x.preview",
+    "onCustomEditor:lottie-x.jsonPreview",
+    "onCommand:lottie-x.openPreview"
   ],
   "main": "./dist/extension.js",
   "contributes": {
+    "commands": [
+      {
+        "command": "lottie-x.openPreview",
+        "title": "Open Lottie Preview",
+        "icon": "$(open-preview)"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "lottie-x.openPreview",
+          "when": "resourceExtname == .json",
+          "group": "navigation"
+        }
+      ]
+    },
     "customEditors": [
       {
         "viewType": "lottie-x.preview",
@@ -24,6 +42,16 @@
           }
         ],
         "priority": "default"
+      },
+      {
+        "viewType": "lottie-x.jsonPreview",
+        "displayName": "Lottie Preview",
+        "selector": [
+          {
+            "filenamePattern": "*.json"
+          }
+        ],
+        "priority": "option"
       }
     ]
   },
@@ -51,6 +79,7 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "@lottiefiles/dotlottie-web": "^0.72.0"
+    "@lottiefiles/dotlottie-web": "^0.72.0",
+    "lottie-web": "^5.13.0"
   }
 }

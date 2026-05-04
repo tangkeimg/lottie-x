@@ -2,11 +2,12 @@ import * as path from 'node:path';
 import * as vscode from 'vscode';
 
 const VIEW_TYPE = 'lottie-x.preview';
+const JSON_VIEW_TYPE = 'lottie-x.jsonPreview';
 
 type PreviewMessage = {
 	type: 'load';
 	fileName: string;
-	animationData: Uint8Array;
+	animationData: string | Uint8Array;
 	wasmUri: string;
 };
 
@@ -19,12 +20,17 @@ class LottiePreviewDocument implements vscode.CustomDocument {
 export class LottiePreviewProvider implements vscode.CustomReadonlyEditorProvider<LottiePreviewDocument> {
 	public static register(context: vscode.ExtensionContext): vscode.Disposable {
 		const provider = new LottiePreviewProvider(context);
-		return vscode.window.registerCustomEditorProvider(VIEW_TYPE, provider, {
+		const options = {
 			supportsMultipleEditorsPerDocument: true,
 			webviewOptions: {
 				retainContextWhenHidden: true,
 			},
-		});
+		};
+
+		return vscode.Disposable.from(
+			vscode.window.registerCustomEditorProvider(VIEW_TYPE, provider, options),
+			vscode.window.registerCustomEditorProvider(JSON_VIEW_TYPE, provider, options),
+		);
 	}
 
 	private constructor(private readonly context: vscode.ExtensionContext) { }
@@ -53,7 +59,8 @@ export class LottiePreviewProvider implements vscode.CustomReadonlyEditorProvide
 		webviewPanel.webview.html = this.getHtml(webviewPanel.webview);
 
 		const postLoadMessage = async () => {
-			const animationData = await vscode.workspace.fs.readFile(document.uri);
+			const animationBytes = await vscode.workspace.fs.readFile(document.uri);
+			const animationData = getAnimationData(document.uri, animationBytes);
 			const wasmUri = webviewPanel.webview.asWebviewUri(
 				vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'dotlottie-player.wasm'),
 			);
@@ -112,6 +119,10 @@ export class LottiePreviewProvider implements vscode.CustomReadonlyEditorProvide
 
 		* {
 			box-sizing: border-box;
+		}
+
+		[hidden] {
+			display: none !important;
 		}
 
 		body {
@@ -173,12 +184,19 @@ export class LottiePreviewProvider implements vscode.CustomReadonlyEditorProvide
 			pointer-events: none;
 		}
 
-		canvas {
+		canvas,
+		.svg-preview {
 			position: relative;
 			display: block;
 			width: 100%;
 			height: 100%;
 			min-height: 360px;
+		}
+
+		.svg-preview svg {
+			display: block;
+			width: 100%;
+			height: 100%;
 		}
 
 		.empty {
@@ -238,6 +256,7 @@ export class LottiePreviewProvider implements vscode.CustomReadonlyEditorProvide
 		<div class="stage">
 			<div class="grid"></div>
 			<canvas id="canvas"></canvas>
+			<div class="svg-preview" id="svg" hidden></div>
 			<div class="empty" id="empty">Open a <code>.lottie</code> file to preview it here.</div>
 		</div>
 		<div class="status" id="meta">Auto-reloads when the file changes on disk.</div>
@@ -256,6 +275,14 @@ function getParentUri(uri: vscode.Uri): vscode.Uri {
 	const segments = uri.path.split('/');
 	segments.pop();
 	return uri.with({ path: segments.join('/') || '/' });
+}
+
+function getAnimationData(uri: vscode.Uri, animationBytes: Uint8Array): string | Uint8Array {
+	if (path.extname(uri.path).toLowerCase() === '.json') {
+		return new TextDecoder().decode(animationBytes);
+	}
+
+	return animationBytes;
 }
 
 function getNonce(): string {

@@ -1,4 +1,5 @@
 import { DotLottie, type Fit } from '@lottiefiles/dotlottie-web';
+import lottie, { type AnimationItem } from 'lottie-web';
 
 type LoadMessage = {
 	type: 'load';
@@ -10,6 +11,7 @@ type LoadMessage = {
 declare function acquireVsCodeApi(): { postMessage(message: unknown): void };
 
 type BinaryPayload =
+	| string
 	| ArrayBuffer
 	| ArrayBufferView
 	| number[]
@@ -20,6 +22,7 @@ type BinaryPayload =
 
 const vscode = acquireVsCodeApi();
 const canvas = document.getElementById('canvas') as HTMLCanvasElement;
+const svgContainer = document.getElementById('svg') as HTMLDivElement;
 const title = document.getElementById('title') as HTMLDivElement;
 const status = document.getElementById('status') as HTMLDivElement;
 const meta = document.getElementById('meta') as HTMLDivElement;
@@ -29,7 +32,9 @@ const restartButton = document.getElementById('restart') as HTMLButtonElement;
 const fitSelect = document.getElementById('fit') as HTMLSelectElement;
 
 let player: DotLottie | undefined;
+let svgAnimation: AnimationItem | undefined;
 let currentFit: Fit = 'contain';
+let currentRenderer: 'canvas' | 'svg' = 'canvas';
 let isPlaying = true;
 let loadWatchdog: number | undefined;
 
@@ -52,11 +57,18 @@ function setEmptyState(message: string, visible: boolean): void {
 
 function destroyPlayer(): void {
 	player?.destroy();
+	svgAnimation?.destroy();
 	player = undefined;
+	svgAnimation = undefined;
+	svgContainer.replaceChildren();
 	clearLoadWatchdog();
 }
 
-function toArrayBuffer(payload: BinaryPayload): ArrayBuffer {
+function toAnimationData(payload: BinaryPayload): string | ArrayBuffer {
+	if (typeof payload === 'string') {
+		return payload;
+	}
+
 	if (isArrayBuffer(payload)) {
 		return payload.slice(0);
 	}
@@ -87,17 +99,23 @@ function clearLoadWatchdog(): void {
 	}
 }
 
-function bindPlayerEvents(instance: DotLottie): void {
+function setRenderer(renderer: 'canvas' | 'svg'): void {
+	currentRenderer = renderer;
+	canvas.hidden = renderer !== 'canvas';
+	svgContainer.hidden = renderer !== 'svg';
+}
+
+function bindCanvasPlayerEvents(instance: DotLottie): void {
 	instance.addEventListener('ready', () => {
 		setStatus('Renderer ready');
 	});
 
 	instance.addEventListener('load', () => {
 		clearLoadWatchdog();
-		const totalFrames = Math.round(instance.totalFrames);
+		const size = instance.animationSize();
 		setEmptyState('', false);
 		setStatus('Animation loaded');
-		setMeta(`Frames: ${totalFrames || 'unknown'} · Loop: on · Fit: ${currentFit}`);
+		setMeta(formatMeta('Canvas', Math.round(instance.totalFrames), size));
 	});
 
 	instance.addEventListener('play', () => {
@@ -129,39 +147,25 @@ function bindPlayerEvents(instance: DotLottie): void {
 async function loadAnimation(message: LoadMessage): Promise<void> {
 	destroyPlayer();
 	title.textContent = message.fileName;
-	setStatus('Loading animation…');
-	setMeta('Initializing WebAssembly renderer…');
-	setEmptyState('Loading preview…', true);
+	setStatus('Loading animation...');
+	setMeta('Initializing renderer...');
+	setEmptyState('Loading preview...', true);
 
 	loadWatchdog = window.setTimeout(() => {
 		setStatus('Preview stalled');
-		setMeta('No load event returned. Check the .lottie package and webview console for loader details.');
+		setMeta('No load event returned. Check the animation file and webview console for loader details.');
 		setEmptyState('Preview stalled before the animation finished loading.', true);
 	}, 4000);
 
 	try {
-		const animationData = toArrayBuffer(message.animationData);
-		DotLottie.setWasmUrl(message.wasmUri);
+		const animationData = toAnimationData(message.animationData);
 
-		player = new DotLottie({
-			canvas,
-			data: animationData,
-			autoplay: true,
-			loop: true,
-			layout: {
-				fit: currentFit,
-				align: [0.5, 0.5],
-			},
-			renderConfig: {
-				autoResize: true,
-				devicePixelRatio: window.devicePixelRatio || 1,
-			},
-		});
+		if (typeof animationData === 'string') {
+			loadJsonAnimation(animationData);
+			return;
+		}
 
-		isPlaying = true;
-		updatePlaybackButton();
-		bindPlayerEvents(player);
-		setMeta('Decoding .lottie package…');
+		loadDotLottieAnimation(animationData, message.wasmUri);
 	} catch (error) {
 		clearLoadWatchdog();
 		setStatus('Load threw synchronously');
@@ -170,26 +174,110 @@ async function loadAnimation(message: LoadMessage): Promise<void> {
 	}
 }
 
+function loadDotLottieAnimation(animationData: ArrayBuffer, wasmUri: string): void {
+	setRenderer('canvas');
+	DotLottie.setWasmUrl(wasmUri);
+
+	player = new DotLottie({
+		canvas,
+		data: animationData,
+		autoplay: true,
+		loop: true,
+		layout: {
+			fit: currentFit,
+			align: [0.5, 0.5],
+		},
+		renderConfig: {
+			autoResize: true,
+			devicePixelRatio: window.devicePixelRatio || 1,
+			quality: 100,
+		},
+	});
+
+	isPlaying = true;
+	updatePlaybackButton();
+	bindCanvasPlayerEvents(player);
+	setMeta('Decoding .lottie package...');
+}
+
+function loadJsonAnimation(animationData: string): void {
+	const parsedAnimation = JSON.parse(animationData) as {
+		w?: number;
+		h?: number;
+	};
+
+	setRenderer('svg');
+	svgAnimation = lottie.loadAnimation({
+		container: svgContainer,
+		renderer: 'svg',
+		loop: true,
+		autoplay: true,
+		animationData: parsedAnimation,
+		rendererSettings: {
+			preserveAspectRatio: 'xMidYMid meet',
+			progressiveLoad: false,
+			hideOnTransparent: false,
+		},
+	});
+
+	svgAnimation.addEventListener('DOMLoaded', () => {
+		clearLoadWatchdog();
+		setEmptyState('', false);
+		setStatus('SVG animation loaded');
+		setMeta(formatMeta('SVG', Math.round(svgAnimation?.totalFrames ?? 0), {
+			width: parsedAnimation.w ?? 0,
+			height: parsedAnimation.h ?? 0,
+		}));
+	});
+
+	svgAnimation.addEventListener('data_failed', () => {
+		clearLoadWatchdog();
+		setEmptyState('This Lottie JSON file could not be loaded.', true);
+		setStatus('Load failed');
+		setMeta('lottie-web could not parse the JSON animation.');
+	});
+
+	isPlaying = true;
+	updatePlaybackButton();
+	setMeta('Rendering JSON with SVG...');
+}
+
 function formatError(error: unknown): string {
 	return error instanceof Error ? error.message : String(error);
 }
 
+function formatMeta(renderer: string, totalFrames: number, size?: { width: number; height: number }): string {
+	const dimensions = size && size.width > 0 && size.height > 0 ? `${size.width}x${size.height}` : 'unknown size';
+
+	return `Renderer: ${renderer} · Size: ${dimensions} · Frames: ${totalFrames || 'unknown'}`;
+}
+
 playPauseButton.addEventListener('click', () => {
-	if (!player) {
+	if (!player && !svgAnimation) {
 		return;
 	}
 
 	if (isPlaying) {
-		player.pause();
+		player?.pause();
+		svgAnimation?.pause();
+		isPlaying = false;
+		updatePlaybackButton();
+		setStatus('Paused');
 		return;
 	}
 
-	player.play();
+	player?.play();
+	svgAnimation?.play();
+	isPlaying = true;
+	updatePlaybackButton();
+	setStatus('Playing');
 });
 
 restartButton.addEventListener('click', () => {
 	player?.stop();
 	player?.play();
+	svgAnimation?.stop();
+	svgAnimation?.play();
 });
 
 fitSelect.addEventListener('change', () => {
@@ -198,7 +286,6 @@ fitSelect.addEventListener('change', () => {
 		fit: currentFit,
 		align: [0.5, 0.5],
 	});
-	setMeta(`Frames: ${Math.round(player?.totalFrames ?? 0) || 'unknown'} · Loop: on · Fit: ${currentFit}`);
 });
 
 window.addEventListener('message', (event: MessageEvent<LoadMessage>) => {
