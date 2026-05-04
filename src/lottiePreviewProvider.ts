@@ -2,7 +2,7 @@ import * as path from 'node:path';
 import * as vscode from 'vscode';
 
 const VIEW_TYPE = 'lottie-x.preview';
-const JSON_VIEW_TYPE = 'lottie-x.jsonPreview';
+export const JSON_VIEW_TYPE = 'lottie-x.jsonPreview';
 
 type PreviewMessage = {
 	type: 'load';
@@ -18,6 +18,8 @@ class LottiePreviewDocument implements vscode.CustomDocument {
 }
 
 export class LottiePreviewProvider implements vscode.CustomReadonlyEditorProvider<LottiePreviewDocument> {
+	private static readonly jsonPreviewPanels = new Map<string, Set<vscode.WebviewPanel>>();
+
 	public static register(context: vscode.ExtensionContext): vscode.Disposable {
 		const provider = new LottiePreviewProvider(context);
 		const options = {
@@ -31,6 +33,25 @@ export class LottiePreviewProvider implements vscode.CustomReadonlyEditorProvide
 			vscode.window.registerCustomEditorProvider(VIEW_TYPE, provider, options),
 			vscode.window.registerCustomEditorProvider(JSON_VIEW_TYPE, provider, options),
 		);
+	}
+
+	public static closeJsonPreviews(exceptUri?: vscode.Uri): void {
+		const exceptKey = exceptUri?.toString();
+		const panelsToClose: vscode.WebviewPanel[] = [];
+
+		for (const [key, panels] of this.jsonPreviewPanels) {
+			if (key === exceptKey) {
+				continue;
+			}
+
+			for (const panel of panels) {
+				panelsToClose.push(panel);
+			}
+		}
+
+		for (const panel of panelsToClose) {
+			panel.dispose();
+		}
 	}
 
 	private constructor(private readonly context: vscode.ExtensionContext) { }
@@ -57,6 +78,11 @@ export class LottiePreviewProvider implements vscode.CustomReadonlyEditorProvide
 			],
 		};
 		webviewPanel.webview.html = this.getHtml(webviewPanel.webview);
+		const jsonPreviewKey = isJsonUri(document.uri) ? document.uri.toString() : undefined;
+
+		if (jsonPreviewKey) {
+			this.trackJsonPreviewPanel(jsonPreviewKey, webviewPanel);
+		}
 
 		const postLoadMessage = async () => {
 			const animationBytes = await vscode.workspace.fs.readFile(document.uri);
@@ -76,6 +102,11 @@ export class LottiePreviewProvider implements vscode.CustomReadonlyEditorProvide
 		};
 
 		const watcher = this.createWatcher(document.uri, postLoadMessage);
+		const textChangeSubscription = vscode.workspace.onDidChangeTextDocument((event) => {
+			if (event.document.uri.toString() === document.uri.toString() && isJsonUri(document.uri)) {
+				void postLoadMessage();
+			}
+		});
 		const receiveSubscription = webviewPanel.webview.onDidReceiveMessage((message: { type?: string }) => {
 			if (message.type === 'ready') {
 				void postLoadMessage();
@@ -84,6 +115,7 @@ export class LottiePreviewProvider implements vscode.CustomReadonlyEditorProvide
 
 		webviewPanel.onDidDispose(() => {
 			watcher?.dispose();
+			textChangeSubscription.dispose();
 			receiveSubscription.dispose();
 		});
 	}
@@ -99,6 +131,20 @@ export class LottiePreviewProvider implements vscode.CustomReadonlyEditorProvide
 		watcher.onDidCreate(() => reload());
 		watcher.onDidDelete(() => reload());
 		return watcher;
+	}
+
+	private trackJsonPreviewPanel(key: string, panel: vscode.WebviewPanel): void {
+		const panels = LottiePreviewProvider.jsonPreviewPanels.get(key) ?? new Set<vscode.WebviewPanel>();
+		panels.add(panel);
+		LottiePreviewProvider.jsonPreviewPanels.set(key, panels);
+
+		panel.onDidDispose(() => {
+			panels.delete(panel);
+
+			if (panels.size === 0) {
+				LottiePreviewProvider.jsonPreviewPanels.delete(key);
+			}
+		});
 	}
 
 	private getHtml(webview: vscode.Webview): string {
@@ -278,11 +324,21 @@ function getParentUri(uri: vscode.Uri): vscode.Uri {
 }
 
 function getAnimationData(uri: vscode.Uri, animationBytes: Uint8Array): string | Uint8Array {
-	if (path.extname(uri.path).toLowerCase() === '.json') {
+	if (isJsonUri(uri)) {
+		const openDocument = vscode.workspace.textDocuments.find((document) => document.uri.toString() === uri.toString());
+
+		if (openDocument) {
+			return openDocument.getText();
+		}
+
 		return new TextDecoder().decode(animationBytes);
 	}
 
 	return animationBytes;
+}
+
+function isJsonUri(uri: vscode.Uri): boolean {
+	return path.extname(uri.path).toLowerCase() === '.json';
 }
 
 function getNonce(): string {

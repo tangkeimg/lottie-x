@@ -12,7 +12,8 @@
   "activationEvents": [
     "onCustomEditor:lottie-x.preview",
     "onCustomEditor:lottie-x.jsonPreview",
-    "onCommand:lottie-x.openPreview"
+    "onCommand:lottie-x.openPreview",
+    "onLanguage:json"
   ],
   "main": "./dist/extension.js",
   "contributes": {
