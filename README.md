@@ -4,7 +4,7 @@ Preview Lottie animations directly in Visual Studio Code.
 
 `lottie-x` lets you inspect `.lottie` and Lottie `.json` animations without leaving the editor. It is built for designers, frontend developers, and anyone who needs to quickly check animation files while working in a project.
 
-![lottie-x preview](0.png)
+![lottie-x preview](./0.png)
 
 ## Features
 
@@ -23,7 +23,7 @@ Open a `.lottie` file and it will display in the Lottie preview editor.
 
 Use the controls in the preview toolbar to play, pause, restart, or adjust fit mode.
 
-![.lottie preview](1.png)
+![.lottie preview](./1.png)
 
 ## Preview Lottie JSON Files
 
