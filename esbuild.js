@@ -1,4 +1,6 @@
 const esbuild = require("esbuild");
+const fs = require("fs");
+const path = require("path");
 
 const production = process.argv.includes('--production');
 const watch = process.argv.includes('--watch');
@@ -24,10 +26,17 @@ const esbuildProblemMatcherPlugin = {
 };
 
 async function main() {
-	const ctx = await esbuild.context({
-		entryPoints: [
-			'src/extension.ts'
-		],
+	const distDir = path.join(__dirname, 'dist');
+	const wasmSource = path.join(__dirname, 'node_modules', '@lottiefiles', 'dotlottie-web', 'dist', 'dotlottie-player.wasm');
+	const wasmTarget = path.join(distDir, 'dotlottie-player.wasm');
+
+	const copyAssets = () => {
+		fs.mkdirSync(distDir, { recursive: true });
+		fs.copyFileSync(wasmSource, wasmTarget);
+	};
+
+	const extensionCtx = await esbuild.context({
+		entryPoints: ['src/extension.ts'],
 		bundle: true,
 		format: 'cjs',
 		minify: production,
@@ -37,16 +46,34 @@ async function main() {
 		outfile: 'dist/extension.js',
 		external: ['vscode'],
 		logLevel: 'silent',
-		plugins: [
-			/* add to the end of plugins array */
-			esbuildProblemMatcherPlugin,
-		],
+		plugins: [esbuildProblemMatcherPlugin],
 	});
+
+	const previewCtx = await esbuild.context({
+		entryPoints: ['src/preview/index.ts'],
+		bundle: true,
+		format: 'iife',
+		globalName: 'LottieXPreview',
+		minify: production,
+		sourcemap: !production,
+		sourcesContent: false,
+		platform: 'browser',
+		outfile: 'dist/preview.js',
+		logLevel: 'silent',
+	});
+
+	copyAssets();
+
 	if (watch) {
-		await ctx.watch();
+		await extensionCtx.watch();
+		await previewCtx.watch();
+		fs.watchFile(wasmSource, { interval: 500 }, () => copyAssets());
 	} else {
-		await ctx.rebuild();
-		await ctx.dispose();
+		await extensionCtx.rebuild();
+		await previewCtx.rebuild();
+		copyAssets();
+		await extensionCtx.dispose();
+		await previewCtx.dispose();
 	}
 }
 

@@ -7,6 +7,10 @@ settings:
 importers:
 
   .:
+    dependencies:
+      '@lottiefiles/dotlottie-web':
+        specifier: ^0.72.0
+        version: 0.72.0
     devDependencies:
       '@types/mocha':
         specifier: ^10.0.10
@@ -212,6 +216,9 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
+
+  '@lottiefiles/dotlottie-web@0.72.0':
+    resolution: {integrity: sha512-CllhCIWWcCrUN71RCwyj9vbSQGE8H465m2Efudizfe5CIitQly7TO7DS2f6juBr5VZVy/r5AqQPUcbvz2uoxtQ==}
 
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
@@ -1391,6 +1398,8 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
+
+  '@lottiefiles/dotlottie-web@0.72.0': {}
 
   '@pkgjs/parseargs@0.11.0':
     optional: true

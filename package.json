@@ -9,13 +9,21 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onCustomEditor:lottie-x.preview"
+  ],
   "main": "./dist/extension.js",
   "contributes": {
-    "commands": [
+    "customEditors": [
       {
-        "command": "lottie-x.helloWorld",
-        "title": "Hello World"
+        "viewType": "lottie-x.preview",
+        "displayName": "Lottie Preview",
+        "selector": [
+          {
+            "filenamePattern": "*.lottie"
+          }
+        ],
+        "priority": "default"
       }
     ]
   },
@@ -33,13 +41,16 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.118.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "22.x",
+    "@types/vscode": "^1.118.0",
+    "@vscode/test-cli": "^0.0.12",
+    "@vscode/test-electron": "^2.5.2",
     "esbuild": "^0.27.3",
     "npm-run-all": "^4.1.5",
-    "typescript": "^5.9.3",
-    "@vscode/test-cli": "^0.0.12",
-    "@vscode/test-electron": "^2.5.2"
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@lottiefiles/dotlottie-web": "^0.72.0"
   }
 }
