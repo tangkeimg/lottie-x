@@ -11,6 +11,7 @@ Preview Lottie animations directly in Visual Studio Code.
 - Preview `.lottie` files directly in VS Code
 - Preview Lottie `.json` files with sharp SVG rendering
 - Automatically opens a linked preview beside Lottie JSON files
+- Click Lottie elements in HTML to open referenced `.json` or `.lottie` previews
 - Closes the linked preview when the source JSON editor is closed
 - Updates JSON previews from the current editor content, including unsaved edits
 - Play, pause, and restart animations
@@ -36,6 +37,14 @@ The preview is linked to the source JSON editor:
 - Switch away from the Lottie JSON file and the linked preview closes.
 
 You can also open the preview manually from the editor title bar preview button.
+
+## Preview From HTML
+
+In HTML files, Lottie-related elements expose an `Open Lottie Preview` CodeLens and a clickable tag-name link when they reference a local `.json` or `.lottie` animation.
+
+Supported examples include `<lottie-player src="./animation.json">`, `<dotlottie-player src="./animation.lottie">`, and elements with Lottie-related attributes such as `data-lottie-src` or `animation-path`.
+
+Inline `lottie.loadAnimation({ container: document.getElementById('target'), path: './animation.json' })` and `bodymovin.loadAnimation(...)` calls are also detected. When possible, the preview action is attached to the referenced container element.
 
 ## Supported Files
 

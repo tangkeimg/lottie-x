@@ -1,19 +1,21 @@
 import * as vscode from 'vscode';
-import { JSON_VIEW_TYPE, LottiePreviewProvider } from './lottiePreviewProvider';
+import { HtmlLottieLinkProvider } from './htmlLottieLinkProvider';
+import { JSON_VIEW_TYPE, LOTTIE_VIEW_TYPE, LottiePreviewProvider } from './lottiePreviewProvider';
 
 let lastAutoPreviewUri: string | undefined;
 
 export function activate(context: vscode.ExtensionContext): void {
 	context.subscriptions.push(
 		LottiePreviewProvider.register(context),
-		vscode.commands.registerCommand('lottie-toolkit.openPreview', (uri?: vscode.Uri) => {
-			const targetUri = uri ?? vscode.window.activeTextEditor?.document.uri;
+		HtmlLottieLinkProvider.register(),
+		vscode.commands.registerCommand('lottie-toolkit.openPreview', (uri?: vscode.Uri | string) => {
+			const targetUri = normalizeUri(uri) ?? vscode.window.activeTextEditor?.document.uri;
 
 			if (!targetUri) {
 				return;
 			}
 
-			void openJsonPreview(targetUri);
+			void openPreview(targetUri);
 		}),
 		vscode.window.onDidChangeActiveTextEditor((editor) => {
 			handleActiveEditorChange(editor);
@@ -50,7 +52,7 @@ function handleActiveEditorChange(editor: vscode.TextEditor | undefined): void {
 
 	lastAutoPreviewUri = uriKey;
 	LottiePreviewProvider.closeJsonPreviews(uri);
-	void openJsonPreview(uri);
+	void openPreview(uri);
 }
 
 function syncTrackedPreviewWithSourceTab(): void {
@@ -66,12 +68,39 @@ function syncTrackedPreviewWithSourceTab(): void {
 	LottiePreviewProvider.closeJsonPreviews();
 }
 
-async function openJsonPreview(uri: vscode.Uri): Promise<void> {
-	await vscode.commands.executeCommand('vscode.openWith', uri, JSON_VIEW_TYPE, {
+async function openPreview(uri: vscode.Uri): Promise<void> {
+	const viewType = getPreviewViewType(uri);
+
+	if (!viewType) {
+		void vscode.window.showWarningMessage('Only .lottie files and Lottie JSON files can be previewed.');
+		return;
+	}
+
+	await vscode.commands.executeCommand('vscode.openWith', uri, viewType, {
 		viewColumn: vscode.ViewColumn.Beside,
 		preserveFocus: true,
 		preview: true,
 	});
+}
+
+function getPreviewViewType(uri: vscode.Uri): string | undefined {
+	if (isJsonUri(uri)) {
+		return JSON_VIEW_TYPE;
+	}
+
+	if (uri.path.toLowerCase().endsWith('.lottie')) {
+		return LOTTIE_VIEW_TYPE;
+	}
+
+	return undefined;
+}
+
+function normalizeUri(uri: vscode.Uri | string | undefined): vscode.Uri | undefined {
+	if (!uri) {
+		return undefined;
+	}
+
+	return typeof uri === 'string' ? vscode.Uri.parse(uri) : uri;
 }
 
 function isJsonUri(uri: vscode.Uri): boolean {

@@ -1,7 +1,7 @@
 import * as path from 'node:path';
 import * as vscode from 'vscode';
 
-const VIEW_TYPE = 'lottie-toolkit.preview';
+export const LOTTIE_VIEW_TYPE = 'lottie-toolkit.preview';
 export const JSON_VIEW_TYPE = 'lottie-toolkit.jsonPreview';
 
 type PreviewMessage = {
@@ -30,7 +30,7 @@ export class LottiePreviewProvider implements vscode.CustomReadonlyEditorProvide
 		};
 
 		return vscode.Disposable.from(
-			vscode.window.registerCustomEditorProvider(VIEW_TYPE, provider, options),
+			vscode.window.registerCustomEditorProvider(LOTTIE_VIEW_TYPE, provider, options),
 			vscode.window.registerCustomEditorProvider(JSON_VIEW_TYPE, provider, options),
 		);
 	}

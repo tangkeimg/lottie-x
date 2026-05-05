@@ -31,7 +31,8 @@
     "onCustomEditor:lottie-toolkit.preview",
     "onCustomEditor:lottie-toolkit.jsonPreview",
     "onCommand:lottie-toolkit.openPreview",
-    "onLanguage:json"
+    "onLanguage:json",
+    "onLanguage:html"
   ],
   "main": "./dist/extension.js",
   "contributes": {
