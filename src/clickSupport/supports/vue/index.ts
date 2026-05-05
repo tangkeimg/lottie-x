@@ -2,13 +2,26 @@ import { findImportReference, findObjectExpressionProperty, findObjectShorthandP
 import type { ContainerSelector } from '../../lib/types';
 
 export function parseVueContainerSelector(expression: string): ContainerSelector | undefined {
-	const vueRefMatch = /^([A-Za-z_$][\w$]*)\s*\.\s*value$/.exec(expression.trim());
+	const trimmedExpression = expression.trim();
+	const vue3RefMatch = /^([A-Za-z_$][\w$]*)\s*\.\s*value$/.exec(trimmedExpression);
 
-	if (!vueRefMatch) {
-		return undefined;
+	if (vue3RefMatch) {
+		return { type: 'ref', value: vue3RefMatch[1] };
 	}
 
-	return { type: 'ref', value: vueRefMatch[1] };
+	const vue2DotRefMatch = /^this\s*\.\s*\$refs\s*\.\s*([A-Za-z_$][\w$]*)$/.exec(trimmedExpression);
+
+	if (vue2DotRefMatch) {
+		return { type: 'ref', value: vue2DotRefMatch[1] };
+	}
+
+	const vue2BracketRefMatch = /^this\s*\.\s*\$refs\s*\[\s*(['"`])([^'"`]+)\1\s*\]$/.exec(trimmedExpression);
+
+	if (vue2BracketRefMatch) {
+		return { type: 'ref', value: vue2BracketRefMatch[2] };
+	}
+
+	return undefined;
 }
 
 export function findVueAnimationDataReference(optionsObject: string, documentText: string): string | undefined {

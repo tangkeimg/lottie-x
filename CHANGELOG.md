@@ -7,7 +7,7 @@
 - Open Lottie previews from supported HTML and Vue source patterns.
 - Detect common player tags such as `<lottie-player>` and `<dotlottie-player>`.
 - Detect inline `lottie.loadAnimation(...)` and `bodymovin.loadAnimation(...)` calls with local `path` or `src` references.
-- Detect Vue 3 `ref` containers and imported `animationData` JSON, including `@/assets/...` Vite-style aliases.
+- Detect Vue 2 and Vue 3 `ref` containers and imported `animationData` JSON, including `@/assets/...` Vite-style aliases.
 - Add CodeLens and inline hint preview actions for detected source elements.
 
 ### Changed

@@ -52,6 +52,7 @@ Supported HTML patterns include:
 Supported Vue single-file component patterns include:
 
 - `container: lottieBox.value` paired with `<div ref="lottieBox">`
+- `container: this.$refs.lottieBox` paired with `<div ref="lottieBox">`
 - `animationData` imported from local JSON, for example `import animationData from '@/assets/animation.json'`
 
 In Vue files, Vue language tools may own the tag name click behavior. Click the resolved attribute value, such as `ref="lottieBox"`'s `lottieBox`, or use the CodeLens / inline hint to open the preview directly.
