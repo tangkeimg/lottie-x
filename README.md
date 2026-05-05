@@ -11,7 +11,7 @@ Preview Lottie animations directly in Visual Studio Code.
 - Preview `.lottie` files directly in VS Code
 - Preview Lottie `.json` files with sharp SVG rendering
 - Automatically opens a linked preview beside Lottie JSON files
-- Click Lottie elements in HTML to open referenced `.json` or `.lottie` previews
+- Open referenced Lottie animations from HTML and Vue source files
 - Closes the linked preview when the source JSON editor is closed
 - Updates JSON previews from the current editor content, including unsaved edits
 - Play, pause, and restart animations
@@ -38,13 +38,23 @@ The preview is linked to the source JSON editor:
 
 You can also open the preview manually from the editor title bar preview button.
 
-## Preview From HTML
+## Preview From HTML And Vue
 
-In HTML files, Lottie-related elements expose an `Open Lottie Preview` CodeLens and a clickable tag-name link when they reference a local `.json` or `.lottie` animation.
+HTML and Vue files expose an `Open Lottie Preview` CodeLens and a `Preview Lottie` inline hint when the extension can resolve a local `.json` or `.lottie` animation.
 
-Supported examples include `<lottie-player src="./animation.json">`, `<dotlottie-player src="./animation.lottie">`, and elements with Lottie-related attributes such as `data-lottie-src` or `animation-path`.
+Supported HTML patterns include:
 
-Inline `lottie.loadAnimation({ container: document.getElementById('target'), path: './animation.json' })` and `bodymovin.loadAnimation(...)` calls are also detected. When possible, the preview action is attached to the referenced container element.
+- `<lottie-player src="./animation.json">`
+- `<dotlottie-player src="./animation.lottie">`
+- `lottie.loadAnimation({ container: document.getElementById('target'), path: './animation.json' })`
+- `bodymovin.loadAnimation(...)`
+
+Supported Vue single-file component patterns include:
+
+- `container: lottieBox.value` paired with `<div ref="lottieBox">`
+- `animationData` imported from local JSON, for example `import animationData from '@/assets/animation.json'`
+
+In Vue files, Vue language tools may own the tag name click behavior. Click the resolved attribute value, such as `ref="lottieBox"`'s `lottieBox`, or use the CodeLens / inline hint to open the preview directly.
 
 ## Supported Files
 

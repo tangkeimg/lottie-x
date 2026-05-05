@@ -1,13 +1,13 @@
 import * as vscode from 'vscode';
-import { HtmlLottieLinkProvider } from './htmlLottieLinkProvider';
-import { JSON_VIEW_TYPE, LOTTIE_VIEW_TYPE, LottiePreviewProvider } from './lottiePreviewProvider';
+import { LottieClickSupportProvider } from './clickSupport';
+import { JSON_VIEW_TYPE, LOTTIE_VIEW_TYPE, LottiePreviewProvider } from './preview/lottiePreviewProvider';
 
 let lastAutoPreviewUri: string | undefined;
 
 export function activate(context: vscode.ExtensionContext): void {
 	context.subscriptions.push(
 		LottiePreviewProvider.register(context),
-		HtmlLottieLinkProvider.register(),
+		LottieClickSupportProvider.register(),
 		vscode.commands.registerCommand('lottie-toolkit.openPreview', (uri?: vscode.Uri | string) => {
 			const targetUri = normalizeUri(uri) ?? vscode.window.activeTextEditor?.document.uri;
 

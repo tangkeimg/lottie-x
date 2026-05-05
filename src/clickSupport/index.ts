@@ -1,0 +1,1 @@
+export { LottieClickSupportProvider } from './provider';
