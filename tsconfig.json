@@ -8,8 +8,7 @@
 		],
 		"types": [
 			"node",
-			"vscode",
-			"mocha"
+			"vscode"
 		],
 		"skipLibCheck": true,
 		"sourceMap": true,
