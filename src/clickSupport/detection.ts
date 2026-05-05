@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import type { LottieSourceReference } from './lib/types';
 import { findNativeHtmlReferences } from './supports/html';
 import { findLoadAnimationReferences } from './supports/loadAnimation';
+import { findReactJsxReferences } from './supports/react';
 import { parseTags } from './utils/markup';
 
 export function findLottieReferences(document: vscode.TextDocument): LottieSourceReference[] {
@@ -11,5 +12,6 @@ export function findLottieReferences(document: vscode.TextDocument): LottieSourc
 	return [
 		...findNativeHtmlReferences(document, tags),
 		...findLoadAnimationReferences(document, text, tags),
+		...findReactJsxReferences(document, tags, text),
 	];
 }

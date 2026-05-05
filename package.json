@@ -3,7 +3,7 @@
   "displayName": "Lottie Toolkit",
   "description": "Preview .lottie and Lottie JSON animations, and open previews from HTML and Vue source files in Visual Studio Code.",
   "icon": "icon.png",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "publisher": "tangkeimg",
   "license": "SEE LICENSE IN LICENSE.txt",
   "repository": {
@@ -45,6 +45,8 @@
     "onLanguage:json",
     "onLanguage:html",
     "onLanguage:vue",
+    "onLanguage:javascriptreact",
+    "onLanguage:typescriptreact",
     "workspaceContains:**/*.vue"
   ],
   "main": "./dist/extension.js",

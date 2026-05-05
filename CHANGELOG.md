@@ -1,5 +1,14 @@
 # Change Log
 
+## 1.2.0
+
+### Added
+
+- Open Lottie previews from React JSX and TSX source files.
+- Detect `<Lottie animationData={animationData} />` and similar component props with import tracing.
+- Detect `lottie.loadAnimation(...)` calls in JSX/TSX files, including `animationData` shorthand references.
+- Resolve React `refName.current` containers paired with `<div ref={refName}>` elements.
+
 ## 1.1.0
 
 ### Added

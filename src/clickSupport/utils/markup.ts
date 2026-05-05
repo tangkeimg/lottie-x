@@ -1,8 +1,8 @@
-import * as vscode from 'vscode';
+﻿import * as vscode from 'vscode';
 import type { ContainerSelector, MarkupAttribute, MarkupTag } from '../lib/types';
 
-const OPENING_TAG_PATTERN = /<([A-Za-z][\w:.-]*)(\s(?:[^"'<>]|"[^"]*"|'[^']*')*)?>/g;
-const ATTRIBUTE_PATTERN = /([^\s"'<>/=]+)(?:\s*=\s*("([^"]*)"|'([^']*)'|([^\s"'=<>`]+)))?/g;
+const OPENING_TAG_PATTERN = /<([A-Za-z][\w:.-]*)(\s(?:[^"'<>]|"[^"]*"|'[^']*'|\{[^}]*\})*)?>/g;
+const ATTRIBUTE_PATTERN = /([^\s"'<>/=]+)(?:\s*=\s*("([^"]*)"|'([^']*)'|\{([^}]*)\}|([^\s"'=<>`]+)))?/g;
 
 export function parseTags(document: vscode.TextDocument, text: string): MarkupTag[] {
 	const tags: MarkupTag[] = [];
@@ -102,7 +102,7 @@ function parseAttributes(document: vscode.TextDocument, attributeText: string, a
 
 	for (const match of attributeText.matchAll(ATTRIBUTE_PATTERN)) {
 		const matchOffset = match.index ?? 0;
-		const value = match[3] ?? match[4] ?? match[5];
+		const value = match[3] ?? match[4] ?? match[5] ?? match[6];
 		const valueOffset = value === undefined ? undefined : findAttributeValueOffset(match[0], value);
 
 		attributes.push({
@@ -130,7 +130,7 @@ function findAttributeValueOffset(rawAttribute: string, value: string): number |
 	const leadingWhitespaceLength = afterEquals.length - afterEquals.trimStart().length;
 	const valueStart = afterEqualsOffset + leadingWhitespaceLength;
 
-	if (rawAttribute[valueStart] === '"' || rawAttribute[valueStart] === "'") {
+	if (rawAttribute[valueStart] === '"' || rawAttribute[valueStart] === "'" || rawAttribute[valueStart] === '{') {
 		return valueStart + 1;
 	}
 

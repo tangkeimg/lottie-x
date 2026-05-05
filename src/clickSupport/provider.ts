@@ -6,6 +6,8 @@ const MARKUP_DOCUMENT_SELECTOR: vscode.DocumentSelector = [
 	{ language: 'html', pattern: '**/*.html', scheme: 'file' },
 	{ language: 'html', pattern: '**/*.htm', scheme: 'file' },
 	{ language: 'vue', pattern: '**/*.vue', scheme: 'file' },
+	{ language: 'javascriptreact', scheme: 'file' },
+	{ language: 'typescriptreact', scheme: 'file' },
 ];
 
 export class LottieClickSupportProvider implements

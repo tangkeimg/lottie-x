@@ -12,14 +12,14 @@ Preview Lottie animations directly in Visual Studio Code.
 
 ## Preview
 
-![.lottie preview](./img/vue.gif)
+![.lottie preview](./img/mix.gif)
 
 ## Features
 
 - Preview `.lottie` files directly in VS Code
 - Preview Lottie `.json` files with sharp SVG rendering
 - Automatically opens a linked preview beside Lottie JSON files
-- Open referenced Lottie animations from HTML and Vue source files
+- Open referenced Lottie animations from HTML, Vue, and React (JSX/TSX) source files
 - Closes the linked preview when the source JSON editor is closed
 - Updates JSON previews from the current editor content, including unsaved edits
 - Play, pause, and restart animations
@@ -48,9 +48,11 @@ Use the controls in the preview toolbar to play, pause, restart, or adjust fit m
 
 ![lottie-toolkit preview](./img/dot_preview.png)
 
-## Preview From HTML And Vue
+## Preview From HTML, Vue, And React
 
-HTML and Vue files expose an `Open Lottie Preview` CodeLens and a `Preview Lottie` inline hint when the extension can resolve a local `.json` or `.lottie` animation.
+![.lottie preview](./img/vue.gif)
+
+HTML, Vue, and React (JSX/TSX) files expose an `Open Lottie Preview` CodeLens and a `Preview Lottie` inline hint when the extension can resolve a local `.json` or `.lottie` animation.
 
 Supported HTML patterns include:
 
@@ -66,6 +68,13 @@ Supported Vue single-file component patterns include:
 - `animationData` imported from local JSON, for example `import animationData from '@/assets/animation.json'`
 
 In Vue files, Vue language tools may own the tag name click behavior. Click the resolved attribute value, such as `ref="lottieBox"`'s `lottieBox`, or use the CodeLens / inline hint to open the preview directly.
+
+Supported React JSX/TSX patterns include:
+
+- `<Lottie animationData={animationData} />` with `import animationData from './animation.json'`
+- `<Lottie src="./animation.json" />`
+- `lottie.loadAnimation({ container: containerRef.current, animationData, ... })` paired with `<div ref={containerRef}>`
+- `animationData` shorthand property resolved through import tracing
 
 ## Supported Files
 

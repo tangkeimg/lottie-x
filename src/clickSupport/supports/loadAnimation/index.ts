@@ -5,6 +5,7 @@ import { parseNativeContainerSelector } from '../html';
 import type { ContainerSelector, LottieSourceReference, MarkupTag } from '../../lib/types';
 import { isSupportedAnimationReference, resolveReferencedUri } from '../../utils/uri';
 import { findVueAnimationDataReference, parseVueContainerSelector } from '../vue';
+import { parseReactContainerSelector } from '../react';
 
 export function findLoadAnimationReferences(
 	document: vscode.TextDocument,
@@ -78,6 +79,7 @@ function findLoadAnimationContainerSelector(optionsObject: string, documentText:
 	return (
 		parseNativeContainerSelector(containerExpression) ??
 		parseVueContainerSelector(containerExpression) ??
+		parseReactContainerSelector(containerExpression) ??
 		findVariableContainerSelector(documentText, containerExpression)
 	);
 }
