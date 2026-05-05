@@ -1,10 +1,18 @@
+![Version](https://img.shields.io/visual-studio-marketplace/v/tangkeimg.lottie-toolkit)
+[![OpenVSX Downloads](https://img.shields.io/open-vsx/dt/tangkeimg/lottie-toolkit)](https://open-vsx.org/extension/tangkeimg/lottie-toolkit)
+![License](https://img.shields.io/badge/license-MIT-blue)
+
 # lottie-toolkit
 
 Preview Lottie animations directly in Visual Studio Code.
 
 `lottie-toolkit` lets you inspect `.lottie` and Lottie `.json` animations without leaving the editor. It is built for designers, frontend developers, and anyone who needs to quickly check animation files while working in a project.
 
-![lottie-toolkit preview](./0.png)
+[View on Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=tangkeimg.lottie-toolkit)
+
+## Preview
+
+![.lottie preview](./img/vue.gif)
 
 ## Features
 
@@ -18,15 +26,9 @@ Preview Lottie animations directly in Visual Studio Code.
 - Change fit mode for `.lottie` previews
 - Automatically reloads when animation files change on disk
 
-## Preview `.lottie` Files
-
-Open a `.lottie` file and it will display in the Lottie preview editor.
-
-Use the controls in the preview toolbar to play, pause, restart, or adjust fit mode.
-
-![.lottie preview](./1.png)
-
 ## Preview Lottie JSON Files
+
+![.lottie preview](./img/json_preview.png)
 
 Open a Lottie `.json` file and the preview opens beside the editor automatically.
 
@@ -37,6 +39,14 @@ The preview is linked to the source JSON editor:
 - Switch away from the Lottie JSON file and the linked preview closes.
 
 You can also open the preview manually from the editor title bar preview button.
+
+## Preview `.lottie` Files
+
+Open a `.lottie` file and it will display in the Lottie preview editor.
+
+Use the controls in the preview toolbar to play, pause, restart, or adjust fit mode.
+
+![lottie-toolkit preview](./img/dot_preview.png)
 
 ## Preview From HTML And Vue
 

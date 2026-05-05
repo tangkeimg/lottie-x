@@ -1,7 +1,7 @@
 {
  "name": "lottie-toolkit",
   "displayName": "Lottie Toolkit",
-  "description": "Preview .lottie and Lottie JSON animations directly in Visual Studio Code.",
+  "description": "Preview .lottie and Lottie JSON animations, and open previews from HTML and Vue source files in Visual Studio Code.",
   "icon": "icon.png",
   "version": "1.1.0",
   "publisher": "tangkeimg",
@@ -19,17 +19,18 @@
   ],
   "keywords": [
     "lottie",
+    "lottie preview link",
+    "lottie source preview",
     "lottie preview",
     "lottie viewer",
     "lottie animation",
     "lottie json",
-    "json animation",
-    "html lottie",
-    "vue lottie",
     "lottie-web",
     "dotlottie",
     "dotlottie preview",
-    ".lottie"
+    ".lottie",
+    "html lottie",
+    "vue lottie"
   ],
   "activationEvents": [
     "onCustomEditor:lottie-toolkit.preview",
