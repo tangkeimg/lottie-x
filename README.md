@@ -2,7 +2,7 @@
 [![OpenVSX Downloads](https://img.shields.io/open-vsx/dt/tangkeimg/lottie-toolkit)](https://open-vsx.org/extension/tangkeimg/lottie-toolkit)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
-# lottie-toolkit
+# Lottie Toolkit
 
 Preview Lottie animations directly in Visual Studio Code.
 
