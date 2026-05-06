@@ -42,7 +42,7 @@ export function findLoadAnimationReferences(
 		const callEnd = document.positionAt(callStart + match[0].length - 1);
 		const callRange = new vscode.Range(document.positionAt(callStart), callEnd);
 		references.push({
-			linkRange: containerTag && selector ? getSelectorLinkRange(containerTag, selector) : undefined,
+			linkRange: containerTag && selector && selector.type !== 'ref' ? getSelectorLinkRange(containerTag, selector) : undefined,
 			range: containerTag?.range ?? callRange,
 			reference: target.reference,
 			targetUri: target.uri,

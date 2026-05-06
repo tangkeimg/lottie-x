@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.2.2
+
+### Changed
+
+- `ref` attribute values in Vue and React container elements are no longer clickable as document links. Use the `Open Lottie Preview` CodeLens or inline hint on the container tag instead.
+
 ## 1.2.1
 
 ### Changed

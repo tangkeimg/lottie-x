@@ -3,9 +3,9 @@
   "displayName": "Lottie Toolkit",
   "description": "Preview .lottie and Lottie JSON animations, and open previews from HTML, Vue, and React (JSX/TSX) source files in Visual Studio Code.",
   "icon": "icon.png",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "publisher": "tangkeimg",
-  "license": "SEE LICENSE IN LICENSE.txt",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/tangkeimg/lottie-toolkit.git"
