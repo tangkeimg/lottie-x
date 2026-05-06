@@ -38,10 +38,12 @@ export function resolveReferencedUri(documentUri: vscode.Uri, reference: string)
 	}
 
 	if (referencePath.startsWith('/')) {
-		const workspaceFolder = vscode.workspace.getWorkspaceFolder(documentUri) ?? getFileWorkspaceFolder();
+		const root = getProjectRoot(documentUri)
+			?? vscode.workspace.getWorkspaceFolder(documentUri)?.uri.fsPath
+			?? getFileWorkspaceFolder()?.uri.fsPath;
 
-		if (workspaceFolder) {
-			return vscode.Uri.file(path.join(workspaceFolder.uri.fsPath, referencePath.slice(1)));
+		if (root) {
+			return vscode.Uri.file(path.join(root, referencePath.slice(1)));
 		}
 	}
 

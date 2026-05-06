@@ -38,6 +38,10 @@ export function findReactJsxReferences(
 	const references: LottieSourceReference[] = [];
 
 	for (const tag of tags) {
+		if (!/^[A-Z]/.test(tag.tagName)) {
+			continue;
+		}
+
 		if (!isLottieComponent(tag.tagName, tag.attributes)) {
 			continue;
 		}
