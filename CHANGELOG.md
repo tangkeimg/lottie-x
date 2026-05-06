@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.2.1
+
+### Changed
+
+- Lower minimum VS Code version requirement to `^1.90.0`.
+
 ## 1.2.0
 
 ### Added

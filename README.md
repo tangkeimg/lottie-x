@@ -4,7 +4,7 @@
 
 # Lottie Toolkit
 
-Preview Lottie animations directly in Visual Studio Code.
+Preview .lottie and Lottie JSON animations, and open previews from HTML, Vue, and React (JSX/TSX) source files directly in Visual Studio Code.
 
 `lottie-toolkit` lets you inspect `.lottie` and Lottie `.json` animations without leaving the editor. It is built for designers, frontend developers, and anyone who needs to quickly check animation files while working in a project.
 
@@ -49,8 +49,6 @@ Use the controls in the preview toolbar to play, pause, restart, or adjust fit m
 ![lottie-toolkit preview](./img/dot_preview.png)
 
 ## Preview From HTML, Vue, And React
-
-![.lottie preview](./img/vue.gif)
 
 HTML, Vue, and React (JSX/TSX) files expose an `Open Lottie Preview` CodeLens and a `Preview Lottie` inline hint when the extension can resolve a local `.json` or `.lottie` animation.
 

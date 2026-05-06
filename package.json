@@ -1,9 +1,9 @@
 {
  "name": "lottie-toolkit",
   "displayName": "Lottie Toolkit",
-  "description": "Preview .lottie and Lottie JSON animations, and open previews from HTML and Vue source files in Visual Studio Code.",
+  "description": "Preview .lottie and Lottie JSON animations, and open previews from HTML, Vue, and React (JSX/TSX) source files in Visual Studio Code.",
   "icon": "icon.png",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "publisher": "tangkeimg",
   "license": "SEE LICENSE IN LICENSE.txt",
   "repository": {
@@ -11,7 +11,7 @@
     "url": "https://github.com/tangkeimg/lottie-toolkit.git"
   },
   "engines": {
-    "vscode": "^1.118.0"
+    "vscode": "^1.90.0"
   },
   "categories": [
     "Visualization",
@@ -30,7 +30,10 @@
     "dotlottie preview",
     ".lottie",
     "html lottie",
-    "vue lottie"
+    "vue lottie",
+    "react lottie",
+    "jsx lottie",
+    "tsx lottie"
   ],
   "scripts": {
     "package:vsix": "vsce package --no-dependencies",
@@ -93,7 +96,7 @@
 
   "devDependencies": {
     "@types/node": "22.x",
-    "@types/vscode": "^1.118.0",
+    "@types/vscode": "^1.90.0",
     "esbuild": "^0.27.3",
     "npm-run-all": "^4.1.5",
     "typescript": "^5.9.3"
