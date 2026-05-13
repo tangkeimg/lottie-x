@@ -1,5 +1,17 @@
 # Change Log
 
+## 1.2.3
+
+### Added
+
+- A new progress timeline control for previewing animations.
+- Support for frame-by-frame scrubbing and seeking in both `.lottie` and `.json` previews.
+- Real-time playback status display showing current frame vs total frames.
+
+### Changed
+
+- Previewing an animation now includes a manual pause trigger when interacting with the progress bar.
+
 ## 1.2.2
 
 ### Changed

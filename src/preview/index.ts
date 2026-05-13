@@ -30,6 +30,8 @@ const empty = document.getElementById('empty') as HTMLDivElement;
 const playPauseButton = document.getElementById('playPause') as HTMLButtonElement;
 const restartButton = document.getElementById('restart') as HTMLButtonElement;
 const fitSelect = document.getElementById('fit') as HTMLSelectElement;
+const progressInput = document.getElementById('progress') as HTMLInputElement;
+const frameValue = document.getElementById('frameValue') as HTMLDivElement;
 
 let player: DotLottie | undefined;
 let svgAnimation: AnimationItem | undefined;
@@ -37,9 +39,50 @@ let currentFit: Fit = 'contain';
 let currentRenderer: 'canvas' | 'svg' = 'canvas';
 let isPlaying = true;
 let loadWatchdog: number | undefined;
+let totalFrames = 0;
+let isScrubbing = false;
 
 function updatePlaybackButton(): void {
 	playPauseButton.textContent = isPlaying ? 'Pause' : 'Play';
+}
+
+function pausePlayback(): void {
+	player?.pause();
+	svgAnimation?.pause();
+	isPlaying = false;
+	updatePlaybackButton();
+	setStatus('Paused');
+}
+
+function getMaxSeekFrame(): number {
+	return Math.max(0, totalFrames - 1);
+}
+
+function clampFrame(frame: number): number {
+	return Math.min(getMaxSeekFrame(), Math.max(0, Math.round(frame)));
+}
+
+function updateProgress(frame: number, nextTotalFrames = totalFrames): void {
+	totalFrames = Math.max(0, Math.round(nextTotalFrames));
+	const currentFrame = clampFrame(frame);
+
+	progressInput.max = String(getMaxSeekFrame());
+	progressInput.disabled = totalFrames <= 1;
+
+	if (!isScrubbing) {
+		progressInput.value = String(currentFrame);
+	}
+
+	frameValue.textContent = totalFrames > 0 ? `${currentFrame + 1} / ${totalFrames}` : '-- / --';
+}
+
+function resetProgress(): void {
+	totalFrames = 0;
+	isScrubbing = false;
+	progressInput.value = '0';
+	progressInput.max = '0';
+	progressInput.disabled = true;
+	frameValue.textContent = '-- / --';
 }
 
 function setStatus(message: string): void {
@@ -62,6 +105,7 @@ function destroyPlayer(): void {
 	svgAnimation = undefined;
 	svgContainer.replaceChildren();
 	clearLoadWatchdog();
+	resetProgress();
 }
 
 function toAnimationData(payload: BinaryPayload): string | ArrayBuffer {
@@ -105,6 +149,32 @@ function setRenderer(renderer: 'canvas' | 'svg'): void {
 	svgContainer.hidden = renderer !== 'svg';
 }
 
+function startScrub(): void {
+	if (isScrubbing || (!player && !svgAnimation)) {
+		return;
+	}
+
+	pausePlayback();
+	isScrubbing = true;
+}
+
+function finishScrub(): void {
+	if (!isScrubbing) {
+		return;
+	}
+
+	isScrubbing = false;
+	setStatus('Paused');
+}
+
+function seekToFrame(frame: number): void {
+	const nextFrame = clampFrame(frame);
+
+	player?.setFrame(nextFrame);
+	svgAnimation?.goToAndStop(nextFrame, true);
+	updateProgress(nextFrame);
+}
+
 function bindCanvasPlayerEvents(instance: DotLottie): void {
 	instance.addEventListener('ready', () => {
 		setStatus('Renderer ready');
@@ -116,6 +186,11 @@ function bindCanvasPlayerEvents(instance: DotLottie): void {
 		setEmptyState('', false);
 		setStatus('Animation loaded');
 		setMeta(formatMeta('Canvas', Math.round(instance.totalFrames), size));
+		updateProgress(instance.currentFrame, instance.totalFrames);
+	});
+
+	instance.addEventListener('frame', () => {
+		updateProgress(instance.currentFrame, instance.totalFrames);
 	});
 
 	instance.addEventListener('play', () => {
@@ -135,6 +210,7 @@ function bindCanvasPlayerEvents(instance: DotLottie): void {
 		setEmptyState('This .lottie file could not be loaded.', true);
 		setStatus('Load failed');
 		setMeta(formatError(event.error));
+		resetProgress();
 	});
 
 	instance.addEventListener('renderError', (event) => {
@@ -228,6 +304,11 @@ function loadJsonAnimation(animationData: string): void {
 			width: parsedAnimation.w ?? 0,
 			height: parsedAnimation.h ?? 0,
 		}));
+		updateProgress(svgAnimation?.currentFrame ?? 0, svgAnimation?.totalFrames ?? 0);
+	});
+
+	svgAnimation.addEventListener('enterFrame', () => {
+		updateProgress(svgAnimation?.currentFrame ?? 0, svgAnimation?.totalFrames ?? 0);
 	});
 
 	svgAnimation.addEventListener('data_failed', () => {
@@ -235,6 +316,7 @@ function loadJsonAnimation(animationData: string): void {
 		setEmptyState('This Lottie JSON file could not be loaded.', true);
 		setStatus('Load failed');
 		setMeta('lottie-web could not parse the JSON animation.');
+		resetProgress();
 	});
 
 	isPlaying = true;
@@ -253,16 +335,14 @@ function formatMeta(renderer: string, totalFrames: number, size?: { width: numbe
 }
 
 playPauseButton.addEventListener('click', () => {
+	finishScrub();
+
 	if (!player && !svgAnimation) {
 		return;
 	}
 
 	if (isPlaying) {
-		player?.pause();
-		svgAnimation?.pause();
-		isPlaying = false;
-		updatePlaybackButton();
-		setStatus('Paused');
+		pausePlayback();
 		return;
 	}
 
@@ -274,10 +354,12 @@ playPauseButton.addEventListener('click', () => {
 });
 
 restartButton.addEventListener('click', () => {
+	finishScrub();
 	player?.stop();
 	player?.play();
 	svgAnimation?.stop();
 	svgAnimation?.play();
+	updateProgress(0);
 });
 
 fitSelect.addEventListener('change', () => {
@@ -286,6 +368,39 @@ fitSelect.addEventListener('change', () => {
 		fit: currentFit,
 		align: [0.5, 0.5],
 	});
+});
+
+progressInput.addEventListener('pointerdown', () => {
+	if (!player && !svgAnimation) {
+		return;
+	}
+
+	startScrub();
+});
+
+progressInput.addEventListener('input', () => {
+	if (!player && !svgAnimation) {
+		return;
+	}
+
+	if (!isScrubbing) {
+		startScrub();
+	}
+
+	seekToFrame(Number(progressInput.value));
+});
+
+progressInput.addEventListener('change', () => {
+	if (!player && !svgAnimation) {
+		return;
+	}
+
+	seekToFrame(Number(progressInput.value));
+	finishScrub();
+});
+
+progressInput.addEventListener('blur', () => {
+	finishScrub();
 });
 
 window.addEventListener('message', (event: MessageEvent<LoadMessage>) => {

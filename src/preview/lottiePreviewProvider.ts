@@ -264,6 +264,27 @@ export class LottiePreviewProvider implements vscode.CustomReadonlyEditorProvide
 			align-items: center;
 		}
 
+		.timeline {
+			display: grid;
+			grid-template-columns: minmax(0, 1fr) auto;
+			gap: 12px;
+			align-items: center;
+		}
+
+		.timeline input[type='range'] {
+			width: 100%;
+			margin: 0;
+			accent-color: var(--vscode-button-background);
+		}
+
+		.timeline-value {
+			min-width: 72px;
+			text-align: right;
+			font-size: 12px;
+			font-variant-numeric: tabular-nums;
+			color: var(--vscode-descriptionForeground);
+		}
+
 		button, select {
 			border: 1px solid var(--vscode-dropdown-border, var(--vscode-panel-border));
 			background: var(--vscode-button-secondaryBackground);
@@ -304,6 +325,10 @@ export class LottiePreviewProvider implements vscode.CustomReadonlyEditorProvide
 			<canvas id="canvas"></canvas>
 			<div class="svg-preview" id="svg" hidden></div>
 			<div class="empty" id="empty">Open a <code>.lottie</code> file to preview it here.</div>
+		</div>
+		<div class="timeline">
+			<input type="range" id="progress" min="0" max="0" value="0" step="1" disabled aria-label="Preview progress" />
+			<div class="timeline-value" id="frameValue">-- / --</div>
 		</div>
 		<div class="status" id="meta">Auto-reloads when the file changes on disk.</div>
 	</div>
