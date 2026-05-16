@@ -1,11 +1,26 @@
 export function findObjectStringProperty(optionsObject: string, propertyNames: string[]): string | undefined {
 	const propertyPattern = new RegExp(
-		`(?:^|[{,])\\s*(?:${propertyNames.map(toPropertyKeyPattern).join('|')})\\s*:\\s*(['"\`])([^'"\`]+)\\1`,
+		`(?:^|[{,])\\s*(?:${propertyNames.map(toPropertyKeyPattern).join('|')})\\s*:`,
 		'm',
 	);
 	const match = propertyPattern.exec(optionsObject);
 
-	return match?.[2];
+	if (!match) {
+		return undefined;
+	}
+
+	const valueStart = skipWhitespace(optionsObject, match.index + match[0].length);
+	const quote = optionsObject[valueStart];
+
+	if (quote !== '\'' && quote !== '"' && quote !== '`') {
+		return undefined;
+	}
+
+	const valueEnd = skipString(optionsObject, valueStart);
+
+	return valueEnd === optionsObject.length - 1 && optionsObject[valueEnd] !== quote
+		? undefined
+		: optionsObject.slice(valueStart + 1, valueEnd);
 }
 
 export function findObjectExpressionProperty(optionsObject: string, propertyName: string): string | undefined {

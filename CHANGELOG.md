@@ -1,5 +1,17 @@
 # Change Log
 
+## 1.2.4
+
+### Added
+
+- Support for opening Lottie previews from Laravel Blade templates.
+- Detect common Blade asset helpers such as `asset(...)`, `url(...)`, `mix(...)`, and `Vite::asset(...)` when they reference local `.json` or `.lottie` files.
+
+### Fixed
+
+- Blade files that VS Code identifies as PHP now receive CodeLens, document link, and inline hint preview actions.
+- `lottie.loadAnimation(...)` path strings can now contain nested Blade helper quotes, such as `path: "{{ asset('animations/demo.json') }}"`.
+
 ## 1.2.3
 
 ### Added

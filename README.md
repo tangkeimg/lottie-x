@@ -19,7 +19,7 @@ Preview .lottie and Lottie JSON animations, and open previews from HTML, Vue, an
 - Preview `.lottie` files directly in VS Code
 - Preview Lottie `.json` files with sharp SVG rendering
 - Automatically opens a linked preview beside Lottie JSON files
-- Open referenced Lottie animations from HTML, Vue, and React (JSX/TSX) source files
+- Open referenced Lottie animations from HTML, Vue, React (JSX/TSX), and compatible template files
 - Closes the linked preview when the source JSON editor is closed
 - Updates JSON previews from the current editor content, including unsaved edits
 - Play, pause, and restart animations
@@ -48,9 +48,9 @@ Use the controls in the preview toolbar to play, pause, restart, or adjust fit m
 
 ![lottie-toolkit preview](./img/dot_preview.png)
 
-## Preview From HTML, Vue, And React
+## Preview From Source Files
 
-HTML, Vue, and React (JSX/TSX) files expose an `Open Lottie Preview` CodeLens and a `Preview Lottie` inline hint when the extension can resolve a local `.json` or `.lottie` animation.
+HTML, Vue, React (JSX/TSX), and compatible template files expose an `Open Lottie Preview` CodeLens and a `Preview Lottie` inline hint when the extension can resolve a local `.json` or `.lottie` animation.
 
 Supported HTML patterns include:
 
@@ -58,6 +58,13 @@ Supported HTML patterns include:
 - `<dotlottie-player src="./animation.lottie">`
 - `lottie.loadAnimation({ container: document.getElementById('target'), path: './animation.json' })`
 - `bodymovin.loadAnimation(...)`
+
+Supported Laravel Blade patterns include:
+
+- `<lottie-player src="{{ asset('animations/animation.json') }}">`
+- `<dotlottie-player src="{{ url('animations/animation.lottie') }}">`
+- `lottie.loadAnimation({ container: document.getElementById('target'), path: "{{ asset('animations/animation.json') }}" })`
+- `Vite::asset('resources/animations/animation.json')`
 
 Supported Vue single-file component patterns include:
 

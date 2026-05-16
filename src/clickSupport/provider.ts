@@ -5,6 +5,9 @@ import type { LottieSourceReference } from './lib/types';
 const MARKUP_DOCUMENT_SELECTOR: vscode.DocumentSelector = [
 	{ language: 'html', pattern: '**/*.html', scheme: 'file' },
 	{ language: 'html', pattern: '**/*.htm', scheme: 'file' },
+	{ language: 'blade', pattern: '**/*.blade.php', scheme: 'file' },
+	{ language: 'php', pattern: '**/*.blade.php', scheme: 'file' },
+	{ pattern: '**/*.blade.php', scheme: 'file' },
 	{ language: 'vue', pattern: '**/*.vue', scheme: 'file' },
 	{ language: 'javascriptreact', scheme: 'file' },
 	{ language: 'typescriptreact', scheme: 'file' },

@@ -3,7 +3,7 @@ import { escapeRegExp, findMatchingDelimiter, findObjectExpressionProperty, find
 import { findTagBySelector, getSelectorLinkRange } from '../../utils/markup';
 import { parseNativeContainerSelector } from '../html';
 import type { ContainerSelector, LottieSourceReference, MarkupTag } from '../../lib/types';
-import { isSupportedAnimationReference, resolveReferencedUri } from '../../utils/uri';
+import { extractSupportedAnimationReference, isSupportedAnimationReference, resolveReferencedUri } from '../../utils/uri';
 import { findVueAnimationDataReference, parseVueContainerSelector } from '../vue';
 import { parseReactContainerSelector } from '../react';
 
@@ -58,7 +58,9 @@ function findLoadAnimationTarget(
 	documentText: string,
 ): { reference: string; uri: vscode.Uri } | undefined {
 	const directReference = findObjectStringProperty(optionsObject, ['path', 'src', 'animationPath', 'animationUrl']);
-	const reference = directReference ?? findVueAnimationDataReference(optionsObject, documentText);
+	const reference = directReference
+		? extractSupportedAnimationReference(directReference)
+		: findVueAnimationDataReference(optionsObject, documentText);
 
 	if (!reference || !isSupportedAnimationReference(reference)) {
 		return undefined;

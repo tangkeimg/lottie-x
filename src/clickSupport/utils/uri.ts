@@ -8,6 +8,18 @@ export function isSupportedAnimationReference(reference: string): boolean {
 	return extension === '.json' || extension === '.lottie';
 }
 
+export function extractSupportedAnimationReference(value: string): string | undefined {
+	const trimmedValue = value.trim();
+
+	if (isSupportedAnimationReference(trimmedValue)) {
+		return stripTemplateQuotes(trimmedValue);
+	}
+
+	const bladeReference = extractBladeHelperReference(trimmedValue);
+
+	return bladeReference && isSupportedAnimationReference(bladeReference) ? bladeReference : undefined;
+}
+
 export function resolveReferencedUri(documentUri: vscode.Uri, reference: string): vscode.Uri | undefined {
 	if (documentUri.scheme !== 'file') {
 		return undefined;
@@ -43,6 +55,12 @@ export function resolveReferencedUri(documentUri: vscode.Uri, reference: string)
 			?? getFileWorkspaceFolder()?.uri.fsPath;
 
 		if (root) {
+			const publicAssetPath = path.join(root, 'public', referencePath.slice(1));
+
+			if (fs.existsSync(publicAssetPath)) {
+				return vscode.Uri.file(publicAssetPath);
+			}
+
 			return vscode.Uri.file(path.join(root, referencePath.slice(1)));
 		}
 	}
@@ -83,6 +101,40 @@ function stripTemplateQuotes(reference: string): string {
 	return reference;
 }
 
+function extractBladeHelperReference(value: string): string | undefined {
+	const bladeEchoMatch = /^\{\{[-~]?\s*(.*?)\s*[-~]?\}\}$/.exec(value);
+	const expression = bladeEchoMatch ? bladeEchoMatch[1] : value;
+	const helperCallMatch = /^(?:asset|secure_asset|url|secure_url|mix)\s*\(\s*(['"`])([^'"`]+)\1\s*\)$/.exec(expression);
+
+	if (helperCallMatch) {
+		return toWebRootReference(helperCallMatch[2]);
+	}
+
+	const viteAssetMatch = /^Vite::asset\s*\(\s*(['"`])([^'"`]+)\1\s*\)$/.exec(expression);
+
+	if (viteAssetMatch) {
+		return toProjectRootReference(viteAssetMatch[2]);
+	}
+
+	return undefined;
+}
+
+function toWebRootReference(reference: string): string {
+	if (/^(?:https?|data|blob|javascript|mailto|file):/i.test(reference) || reference.startsWith('/')) {
+		return reference;
+	}
+
+	return `/${reference}`;
+}
+
+function toProjectRootReference(reference: string): string {
+	if (/^(?:https?|data|blob|javascript|mailto|file):/i.test(reference) || reference.startsWith('/')) {
+		return reference;
+	}
+
+	return `/${reference}`;
+}
+
 function getFileWorkspaceFolder(): vscode.WorkspaceFolder | undefined {
 	return vscode.workspace.workspaceFolders?.find((folder) => folder.uri.scheme === 'file');
 }
@@ -97,6 +149,8 @@ function getProjectRoot(documentUri: vscode.Uri): string | undefined {
 	while (true) {
 		if (
 			fs.existsSync(path.join(directory, 'package.json')) ||
+			fs.existsSync(path.join(directory, 'artisan')) ||
+			fs.existsSync(path.join(directory, 'composer.json')) ||
 			fs.existsSync(path.join(directory, 'vite.config.js')) ||
 			fs.existsSync(path.join(directory, 'vite.config.ts')) ||
 			fs.existsSync(path.join(directory, 'jsconfig.json')) ||

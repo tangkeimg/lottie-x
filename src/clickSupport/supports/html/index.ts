@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { normalizeAttributeName, normalizeName } from '../../utils/markup';
 import type { AnimationReferenceAttribute, ContainerSelector, LottieSourceReference, MarkupAttribute, MarkupTag } from '../../lib/types';
-import { isSupportedAnimationReference, resolveReferencedUri } from '../../utils/uri';
+import { extractSupportedAnimationReference, resolveReferencedUri } from '../../utils/uri';
 
 const REFERENCE_ATTRIBUTES = new Set([
 	'src',
@@ -112,9 +112,11 @@ function findAnimationReference(attributes: MarkupAttribute[]): AnimationReferen
 			continue;
 		}
 
-		if (isSupportedAnimationReference(attribute.value)) {
+		const reference = extractSupportedAnimationReference(attribute.value);
+
+		if (reference) {
 			return {
-				reference: attribute.value,
+				reference,
 				valueRange: attribute.valueRange,
 			};
 		}

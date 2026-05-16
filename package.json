@@ -1,9 +1,9 @@
 {
  "name": "lottie-toolkit",
   "displayName": "Lottie Toolkit",
-  "description": "Preview .lottie and Lottie JSON animations, and open previews from HTML, Vue, and React (JSX/TSX) source files in Visual Studio Code.",
+  "description": "Preview .lottie and Lottie JSON animations, and open previews from HTML, Laravel Blade, Vue, and React (JSX/TSX) source files in Visual Studio Code.",
   "icon": "icon.png",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "publisher": "tangkeimg",
   "license": "MIT",
   "repository": {
@@ -30,6 +30,8 @@
     "dotlottie preview",
     ".lottie",
     "html lottie",
+    "blade lottie",
+    "laravel blade lottie",
     "vue lottie",
     "react lottie",
     "jsx lottie",
@@ -47,9 +49,12 @@
   "activationEvents": [
     "onLanguage:json",
     "onLanguage:html",
+    "onLanguage:blade",
+    "onLanguage:php",
     "onLanguage:vue",
     "onLanguage:javascriptreact",
     "onLanguage:typescriptreact",
+    "workspaceContains:**/*.blade.php",
     "workspaceContains:**/*.vue"
   ],
   "main": "./dist/extension.js",
